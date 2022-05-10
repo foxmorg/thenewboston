@@ -13,6 +13,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.delete
 import org.springframework.test.web.servlet.get
 import org.springframework.test.web.servlet.patch
 import org.springframework.test.web.servlet.post
@@ -66,7 +67,7 @@ internal class BankControllerTest @Autowired constructor(
         }
 
         @Test
-        fun `should return NOT FOUND id the account number does not exist`() {
+        fun `should return NOT FOUND if no bank with the given account number exists`() {
             // given
             val accountNumber = "does_not_exist"
 
@@ -182,8 +183,41 @@ internal class BankControllerTest @Autowired constructor(
                     }
 
         }
+    }
 
+    @Nested
+    @DisplayName("DELETE /api/banks/{accountNumber}")
+    @TestInstance(Lifecycle.PER_CLASS)
+    inner class DeleteExistingBank {
 
+        @Test
+        fun `should delete the bank with the given account number`() {
+            // given
+            val accountNumber = "1234"
+
+            // when/then
+            mockMvc.delete("$baseUrl/$accountNumber")
+                    .andDo { print() }
+                    .andExpect {
+                        status { isNoContent() }
+                    }
+
+            mockMvc.get("$baseUrl/$accountNumber")
+                    .andExpect { status { isNotFound() } }
+        }
+
+        @Test
+        fun `should return NOT FOUND if no bank with the given account number exist`() {
+            // given
+            val invalidAccountNumber = "does_not_exist"
+
+            // when/then
+            mockMvc.delete("$baseUrl/$invalidAccountNumber")
+                    .andDo { print() }
+                    .andExpect {
+                        status { isNotFound() }
+                    }
+        }
     }
 
 }
