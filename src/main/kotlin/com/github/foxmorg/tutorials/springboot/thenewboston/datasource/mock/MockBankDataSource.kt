@@ -4,7 +4,7 @@ import com.github.foxmorg.tutorials.springboot.thenewboston.datasource.BankDataS
 import com.github.foxmorg.tutorials.springboot.thenewboston.model.Bank
 import org.springframework.stereotype.Repository
 
-@Repository
+@Repository("mock")
 class MockBankDataSource : BankDataSource {
 
     val banks = mutableListOf(
